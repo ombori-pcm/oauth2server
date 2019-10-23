@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import Provider from "oidc-provider";
 
 mongoose.connect("mongodb://localhost/test", {useNewUrlParser: true, useUnifiedTopology: true});
 
@@ -11,13 +12,13 @@ db.once("open", () => {
 });
 
 const app = express();
-const port = 3000;
+const appPort = 3000;
+
+app.set("port", appPort);
+
 app.get("/", (req, res) => {
   res.send("The sedulous hyena ate the antelope!");
 });
-app.listen(port, err => {
-  if (err) {
-    return console.error(err);
-  }
-  return console.log(`server is listening on ${port}`);
-});
+const oidc = new Provider("http://localhost:3000");
+app.use("/", oidc.callback);
+app.listen(app.get("port"));
