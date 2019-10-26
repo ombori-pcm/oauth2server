@@ -1,12 +1,12 @@
 import assert from "assert";
 import querystring from "querystring";
 import { inspect } from "util";
-
+import { InteractionResults } from "oidc-provider";
 import isEmpty from "lodash/isEmpty";
 import { urlencoded, Express } from "express";
-import { Provider } from "oidc-provider";
 
-const Account = require("../support/account");
+// const Account = require("../support/account");
+const Account = null;
 
 const body = urlencoded({ extended: false });
 
@@ -21,7 +21,7 @@ const debug = (obj: any) => querystring.stringify(Object.entries(obj).reduce((ac
   encodeURIComponent(value) { return keys.has(value) ? `<strong>${value}</strong>` : value; },
 });
 
-export default (app: Express, provider: Provider) => {
+export default (app: Express, provider: any ) => {
   const { constructor: { errors: { SessionNotFound } } } = provider;
 
   app.use((req, res, next) => {
@@ -160,7 +160,7 @@ export default (app: Express, provider: Provider) => {
       const { prompt: { name, details } } = await provider.interactionDetails(req, res);
       assert.equal(name, "consent");
 
-      const consent = {};
+      const consent: InteractionResults = {};
 
       // any scopes you do not wish to grant go in here
       //   otherwise details.scopes.new.concat(details.scopes.accepted) will be granted
@@ -187,7 +187,7 @@ export default (app: Express, provider: Provider) => {
       const result = {
         error: "access_denied",
         error_description: "End-User aborted interaction",
-      };
+    };
       await provider.interactionFinished(req, res, result, { mergeWithLastSubmission: false });
     } catch (err) {
       next(err);
