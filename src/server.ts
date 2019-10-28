@@ -6,7 +6,6 @@ import { set } from "lodash";
 import helmet from "helmet";
 import path from "path";
 import url from "url";
-import adapter from "./adapter";
 import routes from "./routes";
 import { Server } from "http";
 import Account from "./account";
@@ -24,15 +23,15 @@ app.set("view engine", "ejs");
 
 let server: Server;
 (async () => {
-  await mongoose.connect("mongodb://localhost/oidc",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
-    }
-  );
+  // await mongoose.connect("mongodb://localhost/oidc",
+  //   {
+  //     useNewUrlParser: true,
+  //     useUnifiedTopology: true,
+  //     useCreateIndex: true,
+  //   }
+  // );
 
-  const provider = new Provider(ISSUER, { adapter, ...configuration });
+  const provider = new Provider(ISSUER, { ...configuration });
 
   if (process.env.NODE_ENV === "production") {
     app.enable("trust proxy");

@@ -1,6 +1,6 @@
 import {AdapterPayload, Adapter} from "oidc-provider";
 import snakeCase from "lodash/snakeCase";
-import DefaultModel, {IOAuth2, SessionModel, DeviceCodeModel, GrantableModel} from "./model";
+import DefaultModel, {IOAuth2, SessionModel, DeviceCodeModel, GrantableModel} from "./test-model";
 import { Model } from "mongoose";
 
 const grantable = new Set([
