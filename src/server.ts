@@ -9,8 +9,11 @@ import url from "url";
 import adapter from "./adapter";
 import routes from "./routes";
 import { Server } from "http";
+import Account from "./account";
 
 const { PORT = 3000, ISSUER = `http://localhost:${PORT}` } = process.env;
+
+configuration.findAccount = Account.findAccount;
 
 const app = express();
 app.use(helmet());

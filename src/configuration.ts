@@ -51,6 +51,7 @@ const configuration: Configuration = {
         devInteractions: { enabled: false }, // defaults to true
         introspection: { enabled: true }, // defaults to false
         deviceFlow: { enabled: true }, // defaults to false
+        // sessionManagement: { enabled: true}
     },
     ttl: {
         AccessToken: 1 * 60 * 60, // 1 hour in seconds
