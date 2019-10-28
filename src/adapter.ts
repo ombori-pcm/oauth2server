@@ -1,4 +1,16 @@
-class OAdapter {
+import {AdapterPayload} from 'oidc-provider';
+import snakeCase from 'lodash/snakeCase';
+import DefaultModel, {IOAuth2, SessionModel, DeviceCodeModel, GrantableModel} from './model';
+import { Model } from 'mongoose';
+
+const grantable = new Set([
+    'access_token',
+    'authorization_code',
+    'refresh_token',
+    'device_code',
+]);
+
+class Adapter {
     /**
      *
      * Creates an instance of MyAdapter for an oidc-provider model.
@@ -9,8 +21,21 @@ class OAdapter {
      * "RegistrationAccessToken", "DeviceCode", "Interaction", "ReplayDetection", or "PushedAuthorizationRequest"
      *
      */
-    constructor(name) {
+    constructor(name: string) {
+        const modelName = snakeCase(name);
 
+        if(grantable.has(modelName)){
+             this.model = GrantableModel(modelName);
+        }
+        else if(name === 'device_code'){
+            this.model = DeviceCodeModel;
+        }
+        else if(name === 'session'){
+            this.model = SessionModel;
+        }
+        else{
+            this.model = DefaultModel(modelName);
+        }
     }
 
     /**
@@ -25,7 +50,7 @@ class OAdapter {
      * @param {integer} expiresIn Number of seconds intended for this model to be stored.
      *
      */
-    public async upsert(id, payload, expiresIn) {
+    public async upsert(id: string, payload: AdapterPayload, expiresIn: number) {
 
         /**
          *
@@ -138,6 +163,24 @@ class OAdapter {
          * - exp {number} - timestamp of the replay object cache expiration
          * - iat {number} - timestamp of the replay object cache's creation
          */
+        let expiresAt: Date;
+
+        if (expiresIn) {
+            expiresAt = new Date(Date.now() + (expiresIn * 1000));
+        }
+
+        return new Promise((resolve, reject)=>{
+            try{
+                this.model.updateOne(
+                    { _id:id },
+                    { payload, ...(expiresAt ? { expiresAt } : undefined) } , 
+                    {upsert: true}
+                );
+                resolve();
+            }catch(error){
+                reject(error)
+            }
+        })
     }
 
     /**
@@ -150,22 +193,22 @@ class OAdapter {
      * @param {string} id Identifier of oidc-provider model
      *
      */
-    public async find(id) {
+    public async find(id: string) {
 
     }
 
     /**
      *
-     * Return previously stored instance of DeviceCode by the end-user entered user code. You only
-     * need this method for the deviceFlow feature
-     *
-     * @return {Promise} Promise fulfilled with the stored device code object (when found and not
+     * Return previously storeromise fulfilled with the stored device code object (when found and not
      * dropped yet due to expiration) or falsy value when not found anymore. Rejected with error
      * when encountered.
-     * @param {string} userCode the user_code value associated with a DeviceCode instance
+     * @param {string} userCoded instance of DeviceCode by the end-user entered user code. You only
+     * need this method for the deviceFlow feature
+     *
+     * @return {Promise} P the user_code value associated with a DeviceCode instance
      *
      */
-    public async findByUserCode(userCode) {
+    public async findByUserCode(userCode: string) {
 
     }
 
@@ -182,7 +225,7 @@ class OAdapter {
      * @param {string} uid the uid value associated with a Session instance
      *
      */
-    public async findByUid(uid) {
+    public async findByUid(uid: string) {
 
     }
 
@@ -197,7 +240,7 @@ class OAdapter {
      * @param {string} id Identifier of oidc-provider model
      *
      */
-    public async consume(id) {
+    public async consume(id: string) {
 
     }
 
@@ -211,7 +254,7 @@ class OAdapter {
      * @param {string} id Identifier of oidc-provider model
      *
      */
-    public async destroy(id) {
+    public async destroy(id: string) {
 
     }
 
@@ -225,9 +268,11 @@ class OAdapter {
      * @param {string} grantId the grantId value associated with a this model's instance
      *
      */
-    public async revokeByGrantId(grantId) {
+    public async revokeByGrantId(grantId: string) {
 
     }
+
+    private model:Model<IOAuth2> = null;
 }
 
-export default OAdapter;
+export default Adapter;
