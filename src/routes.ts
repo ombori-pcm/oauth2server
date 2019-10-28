@@ -4,9 +4,7 @@ import { inspect } from "util";
 import { InteractionResults } from "oidc-provider";
 import isEmpty from "lodash/isEmpty";
 import { urlencoded, Express } from "express";
-
-// const Account = require("../support/account");
-const Account = null;
+import Account from "./account";
 
 const body = urlencoded({ extended: false });
 

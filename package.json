@@ -7,10 +7,13 @@
     "@types/helmet": "^0.0.44",
     "@types/lodash": "^4.14.144",
     "@types/mongoose": "^5.5.23",
+    "@types/nanoid": "^2.1.0",
     "express": "^4.17.1",
     "helmet": "^3.21.2",
     "lodash": "^4.17.15",
     "mongoose": "^5.7.7",
+    "nanoid": "^2.1.6",
+    "nodemon": "^1.19.4",
     "oidc-provider": "^6.12.12"
   },
   "devDependencies": {
@@ -30,7 +33,7 @@
     "copy-assets": "ts-node dist/tools/copyAssets",
     "lint": "tslint -c tslint.json -p tsconfig.json --fix",
     "tsc": "tsc",
-    "build": "npm-run-all clean tsc copy-assets",
+    "build": "npm-run-all clean tsc",
     "dev:start": "npm-run-all build start",
     "dev": "nodemon --watch src -e ts,ejs --exec npm run dev:start",
     "start": "node .",

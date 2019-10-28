@@ -313,7 +313,7 @@ class OAuth2Adapter implements Adapter {
     public async revokeByGrantId(grantId: string) {
         return new Promise<void>((resolve, reject) => {
             try {
-                this.model.deleteMany({ 'payload.grantId': grantId })
+                this.model.deleteMany({ "payload.grantId": grantId });
                 resolve();
             } catch (error) {
                 reject(error);
