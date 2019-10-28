@@ -1,16 +1,18 @@
-import {AdapterPayload} from 'oidc-provider';
-import snakeCase from 'lodash/snakeCase';
-import DefaultModel, {IOAuth2, SessionModel, DeviceCodeModel, GrantableModel} from './model';
-import { Model } from 'mongoose';
+import {AdapterPayload, Adapter} from "oidc-provider";
+import snakeCase from "lodash/snakeCase";
+import DefaultModel, {IOAuth2, SessionModel, DeviceCodeModel, GrantableModel} from "./model";
+import { Model } from "mongoose";
 
 const grantable = new Set([
-    'access_token',
-    'authorization_code',
-    'refresh_token',
-    'device_code',
+    "access_token",
+    "authorization_code",
+    "refresh_token",
+    "device_code",
 ]);
 
-class Adapter {
+class OAuth2Adapter implements Adapter {
+
+    private model: Model<IOAuth2> = null;
     /**
      *
      * Creates an instance of MyAdapter for an oidc-provider model.
@@ -24,16 +26,13 @@ class Adapter {
     constructor(name: string) {
         const modelName = snakeCase(name);
 
-        if(grantable.has(modelName)){
-             this.model = GrantableModel(modelName);
-        }
-        else if(name === 'device_code'){
+        if (grantable.has(modelName)) {
+            this.model = GrantableModel(modelName);
+        } else if (name === "device_code") {
             this.model = DeviceCodeModel;
-        }
-        else if(name === 'session'){
+        } else if (name === "session") {
             this.model = SessionModel;
-        }
-        else{
+        } else {
             this.model = DefaultModel(modelName);
         }
     }
@@ -169,18 +168,18 @@ class Adapter {
             expiresAt = new Date(Date.now() + (expiresIn * 1000));
         }
 
-        return new Promise((resolve, reject)=>{
-            try{
-                this.model.updateOne(
-                    { _id:id },
-                    { payload, ...(expiresAt ? { expiresAt } : undefined) } , 
-                    {upsert: true}
+        return new Promise<void>((resolve, reject) => {
+            try {
+                this.model.findByIdAndUpdate(
+                    id,
+                    { payload, ...(expiresAt ? { expiresAt } : undefined) } ,
+                    { upsert: true }
                 );
                 resolve();
-            }catch(error){
-                reject(error)
+            } catch (error) {
+                reject(error);
             }
-        })
+        });
     }
 
     /**
@@ -194,7 +193,15 @@ class Adapter {
      *
      */
     public async find(id: string) {
-
+        this.model.findOne(
+            { _id: id },
+            (error, result) => {
+                if (error) {
+                    return undefined;
+                }
+                return result.payload;
+            }
+        );
     }
 
     /**
@@ -209,7 +216,15 @@ class Adapter {
      *
      */
     public async findByUserCode(userCode: string) {
-
+        this.model.findOne(
+            { "payload.userCode": userCode },
+            (error, result) => {
+                if (error) {
+                    return undefined;
+                }
+                return result.payload;
+            }
+        );
     }
 
     /**
@@ -226,7 +241,15 @@ class Adapter {
      *
      */
     public async findByUid(uid: string) {
-
+        this.model.findOne(
+            { "payload.uid": uid },
+            (error, result) => {
+                if (error) {
+                    return undefined;
+                }
+                return result.payload;
+            }
+        );
     }
 
     /**
@@ -241,7 +264,17 @@ class Adapter {
      *
      */
     public async consume(id: string) {
-
+        return new Promise<void>((resolve, reject) => {
+            try {
+                this.model.updateOne(
+                    { _id: id },
+                    { "payload.consumed": Math.floor(Date.now() / 1000) }
+                );
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     /**
@@ -255,7 +288,16 @@ class Adapter {
      *
      */
     public async destroy(id: string) {
-
+        return new Promise<void>((resolve, reject) => {
+            try {
+                this.model.deleteOne(
+                    { _id: id }
+                );
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     /**
@@ -269,10 +311,15 @@ class Adapter {
      *
      */
     public async revokeByGrantId(grantId: string) {
-
+        return new Promise<void>((resolve, reject) => {
+            try {
+                this.model.deleteMany({ 'payload.grantId': grantId })
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
-
-    private model:Model<IOAuth2> = null;
 }
 
-export default Adapter;
+export default OAuth2Adapter;

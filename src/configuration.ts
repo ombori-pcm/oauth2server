@@ -48,7 +48,7 @@ const configuration: Configuration = {
     },
     features: {
         clientCredentials: { enabled: true }, // defaults to false
-        devInteractions: { enabled: true }, // defaults to true
+        devInteractions: { enabled: false }, // defaults to true
         introspection: { enabled: true }, // defaults to false
         deviceFlow: { enabled: true }, // defaults to false
     },

@@ -6,12 +6,10 @@
   "dependencies": {
     "@types/helmet": "^0.0.44",
     "@types/lodash": "^4.14.144",
-    "@types/mongodb": "^3.3.6",
     "@types/mongoose": "^5.5.23",
     "express": "^4.17.1",
     "helmet": "^3.21.2",
     "lodash": "^4.17.15",
-    "mongodb": "^3.3.3",
     "mongoose": "^5.7.7",
     "oidc-provider": "^6.12.12"
   },
