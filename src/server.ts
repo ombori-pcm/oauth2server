@@ -25,10 +25,9 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 let server: Server;
-const mongoUrl = MONGO_URL;
+
 (async () => {
-  // read-only connection
-  mongoose.connect(mongoUrl,
+  mongoose.connect(MONGO_URL,
     {
       socketTimeoutMS: 0,
       keepAlive: true,
@@ -40,12 +39,12 @@ const mongoUrl = MONGO_URL;
 
   connection.on("reconnectFailed", () => new Error("reconnect failed"));
   connection.on("error", () => {
-    throw new Error(`unable to connect to database: ${mongoUrl}`);
+    throw new Error(`unable to connect to database: ${MONGO_URL}`);
   });
 
   connection.once("open", () => {
-    console.log('Connected to mongo server.');
-    connection.db.collection("data", (err1, collection) => {
+    console.log("Connected to mongo server.");
+    connection.db.collection("grid-admin-qa.data", (err1, collection) => {
         collection.find({}).limit(10).toArray((err2, data) => {
             console.log(data); // it will print your collection data
         });
