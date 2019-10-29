@@ -9,8 +9,11 @@ import url from "url";
 import routes from "./routes";
 import { Server } from "http";
 import Account from "./account";
+import dotenv from "dotenv";
 
-const { PORT = 3000, ISSUER = `http://localhost:${PORT}` } = process.env;
+dotenv.config();
+
+const { PORT = 3000, ISSUER = `http://localhost:${PORT}`, MONGO_URL } = process.env;
 
 configuration.findAccount = Account.findAccount;
 
@@ -22,7 +25,7 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 let server: Server;
-const mongoUrl = "mongodb://grid-admin-qa:w5ONxgBSyM7lGE237StkroEBvLP1CwgtTqWwBz2JiDaHI4YyKgcgtE1UW7BTDqu07WgiVBtaBBOv7CERESQ7nw==@grid-admin-qa.documents.azure.com:10255/?ssl=true&replicaSet=globaldb";
+const mongoUrl = MONGO_URL;
 (async () => {
   // read-only connection
   mongoose.connect(mongoUrl,
