@@ -33,6 +33,7 @@ let server: Server;
       keepAlive: true,
       reconnectTries: 30,
       useNewUrlParser: true,
+      dbName: 'grid-admin-qa'
     }
   );
   const connection = mongoose.connection;
@@ -42,20 +43,27 @@ let server: Server;
     throw new Error(`unable to connect to database: ${MONGO_URL}`);
   });
 
-  connection.once("open", () => {
-    console.log("Connected to mongo server.");
-    connection.db.collection("grid-admin-qa.data", (err1, collection) => {
-        collection.find({}).limit(10).toArray((err2, data) => {
-            console.log(data); // it will print your collection data
-        });
-    });
+  // connection.once("open", () => {
+  //   console.log("Connected to mongo server.");
+  //   connection.db.admin().listDatabases((err1, result) => {
+  //     console.log('listDatabases succeeded');
+  //     // database list stored in result.databases
+  //     const allDatabases = result.databases;
+  //     console.log(allDatabases);
+  //   });
 
-    // trying to get collection names
-    connection.db.listCollections().toArray( (err, names) => {
-        console.log(names); // [{ name: 'dbname.myCollection' }]
-    });
+  //   connection.db.collection("grid-admin-qa.data", (err1, collection) => {
+  //     collection.find({}).limit(10).toArray((err2, data) => {
+  //       console.log(data); // it will print your collection data
+  //     });
+  //   });
 
-});
+  //   // trying to get collection names
+  //   connection.db.listCollections().toArray( (err, names) => {
+  //     console.log(names); // [{ name: 'dbname.myCollection' }]
+  //   });
+
+  // });
 
   // const user = await OldBase.find().limit(10).exec();
   // console.log("user", user);

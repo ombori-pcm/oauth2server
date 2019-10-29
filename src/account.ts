@@ -1,6 +1,5 @@
 import nanoid from "nanoid";
-import User from "./models/user.model";
-import Base from "./models/single-collection";
+import User, { IUser } from "./models/user.model";
 
 const store = new Map();
 const logins = new Map();
@@ -11,11 +10,10 @@ interface IProfile {
     role: string;
 }
 
-const Profile = (accountId: string) => {
+const Profile = (accountId: string, user: IUser) => {
     return {
         sub: accountId, // it is essential to always return a sub claim
-        email: "johndoe@example.com",
-        role: "Admin",
+        ...user,
     };
 };
 
@@ -28,9 +26,13 @@ class Account {
     public static async findByLogin(login: ILogin) {
         const { username, password } = login;
         console.log("findByLogin", username);
-
+        //ross@ombori.com
         if (!logins.get(username)) {
-            logins.set(username, new Account(username, Profile(username)));
+            await User.findOne({ email: username }, (err, client) => {
+                if (err) { return null }
+                console.log(client)
+                logins.set(username, new Account(username, Profile(username,client)));
+            });
         }
 
         return logins.get(username);
@@ -41,9 +43,9 @@ class Account {
         //   it is undefined in scenarios where account claims are returned from authorization endpoint
         // ctx is the koa request context
         console.log("findAccount", id);
-        if (!store.get(id)) {
-            store.set(id, new Account(id, Profile(id)));
-        }
+        // if (!store.get(id)) {
+        //     store.set(id, new Account(id, Profile(id)));
+        // }
         return store.get(id);
     }
 
@@ -71,7 +73,7 @@ class Account {
             };
         }
 
-        return Profile(this.accountId);
+        // return Profile(this.accountId);
     }
 
 }
