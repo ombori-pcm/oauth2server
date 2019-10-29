@@ -23,17 +23,9 @@ const client1: ClientMetadata = {
     token_endpoint_auth_method: "none",
 };
 
-const client2: ClientMetadata = {
-    client_id: "test_oauth_app",
-    client_secret: "super_secret",
-    grant_types: ["client_credentials"],
-    redirect_uris: [],
-    response_types: [],
-};
-
 const configuration: Configuration = {
     clients: [
-        client1, client2,
+        client1,
     ],
     interactions: {
         policy: interactions,
@@ -51,7 +43,6 @@ const configuration: Configuration = {
         devInteractions: { enabled: false }, // defaults to true
         introspection: { enabled: true }, // defaults to false
         deviceFlow: { enabled: true }, // defaults to false
-        // sessionManagement: { enabled: true}
     },
     ttl: {
         AccessToken: 1 * 60 * 60, // 1 hour in seconds

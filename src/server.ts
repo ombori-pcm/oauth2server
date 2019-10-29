@@ -22,14 +22,41 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 let server: Server;
+const mongoUrl = "mongodb://grid-admin-qa:w5ONxgBSyM7lGE237StkroEBvLP1CwgtTqWwBz2JiDaHI4YyKgcgtE1UW7BTDqu07WgiVBtaBBOv7CERESQ7nw==@grid-admin-qa.documents.azure.com:10255/?ssl=true&replicaSet=globaldb";
 (async () => {
-  // await mongoose.connect("mongodb://localhost/oidc",
-  //   {
-  //     useNewUrlParser: true,
-  //     useUnifiedTopology: true,
-  //     useCreateIndex: true,
-  //   }
-  // );
+  // read-only connection
+  mongoose.connect(mongoUrl,
+    {
+      socketTimeoutMS: 0,
+      keepAlive: true,
+      reconnectTries: 30,
+      useNewUrlParser: true,
+    }
+  );
+  const connection = mongoose.connection;
+
+  connection.on("reconnectFailed", () => new Error("reconnect failed"));
+  connection.on("error", () => {
+    throw new Error(`unable to connect to database: ${mongoUrl}`);
+  });
+
+  connection.once("open", () => {
+    console.log('Connected to mongo server.');
+    connection.db.collection("data", (err1, collection) => {
+        collection.find({}).limit(10).toArray((err2, data) => {
+            console.log(data); // it will print your collection data
+        });
+    });
+
+    // trying to get collection names
+    connection.db.listCollections().toArray( (err, names) => {
+        console.log(names); // [{ name: 'dbname.myCollection' }]
+    });
+
+});
+
+  // const user = await OldBase.find().limit(10).exec();
+  // console.log("user", user);
 
   const provider = new Provider(ISSUER, { ...configuration });
 

@@ -114,7 +114,8 @@ export default (app: Express, provider: any ) => {
     try {
       const { prompt: { name } } = await provider.interactionDetails(req, res);
       assert.equal(name, "login");
-      const account = await Account.findByLogin(req.body.login);
+
+      const account = await Account.findByLogin(req.body);
 
       const result = {
         select_account: {}, // make sure its skipped by the interaction policy since we just logged in
