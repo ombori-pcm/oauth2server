@@ -43,31 +43,6 @@ let server: Server;
     throw new Error(`unable to connect to database: ${MONGO_URL}`);
   });
 
-  // connection.once("open", () => {
-  //   console.log("Connected to mongo server.");
-  //   connection.db.admin().listDatabases((err1, result) => {
-  //     console.log('listDatabases succeeded');
-  //     // database list stored in result.databases
-  //     const allDatabases = result.databases;
-  //     console.log(allDatabases);
-  //   });
-
-  //   connection.db.collection("grid-admin-qa.data", (err1, collection) => {
-  //     collection.find({}).limit(10).toArray((err2, data) => {
-  //       console.log(data); // it will print your collection data
-  //     });
-  //   });
-
-  //   // trying to get collection names
-  //   connection.db.listCollections().toArray( (err, names) => {
-  //     console.log(names); // [{ name: 'dbname.myCollection' }]
-  //   });
-
-  // });
-
-  // const user = await OldBase.find().limit(10).exec();
-  // console.log("user", user);
-
   const provider = new Provider(ISSUER, { ...configuration });
 
   if (process.env.NODE_ENV === "production") {

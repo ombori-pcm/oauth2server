@@ -116,19 +116,19 @@ export default (app: Express, provider: any ) => {
       assert.equal(name, "login");
 
       const account = await Account.findByLogin(req.body);
-
+      console.log('acct',account);
       if (!account) {
-        throw Error("User not registered!");
+        throw new Error("User not registered!");
+      } else {
+        const result = {
+          select_account: {}, // make sure its skipped by the interaction policy since we just logged in
+          login: {
+            account: account.accountId,
+          },
+        };
+
+        await provider.interactionFinished(req, res, result, { mergeWithLastSubmission: false });
       }
-
-      const result = {
-        select_account: {}, // make sure its skipped by the interaction policy since we just logged in
-        login: {
-          account: account.accountId,
-        },
-      };
-
-      await provider.interactionFinished(req, res, result, { mergeWithLastSubmission: false });
     } catch (err) {
       next(err);
     }

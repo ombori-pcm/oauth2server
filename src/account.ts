@@ -1,5 +1,6 @@
 import nanoid from "nanoid";
 import User, { IUser } from "./models/user.model";
+import { KoaContextWithOIDC } from "oidc-provider";
 
 const store = new Map();
 const logins = new Map();
@@ -13,7 +14,8 @@ interface IProfile {
 const Profile = (accountId: string, user: IUser) => {
     return {
         sub: accountId, // it is essential to always return a sub claim
-        ...user,
+        email: user.email,
+        role: user.role
     };
 };
 
@@ -28,24 +30,33 @@ class Account {
         console.log("findByLogin", username);
         // ross@ombori.com
         if (!logins.get(username)) {
-            await User.findOne({ email: username }, (err, client) => {
+            const c = await User.findOne({ email: username }, (err, client) => {
                 if (err) { return null; }
-                console.log(client);
-                logins.set(username, new Account(username, Profile(username, client)));
+                return client;
             });
+            if(c){
+                logins.set(username, new Account(username, Profile(username, c)));
+            }
         }
-
-        return logins.get(username);
+        const acct = logins.get(username);
+        if (!acct) { return null; }
+        return acct;
     }
 
-    public static async findAccount(ctx, id, token) {
+    public static async findAccount(ctx: KoaContextWithOIDC, id: string, token: any) {
         // token is a reference to the token used for which a given account is being loaded,
         //   it is undefined in scenarios where account claims are returned from authorization endpoint
         // ctx is the koa request context
-        console.log("findAccount", id);
-        // if (!store.get(id)) {
-        //     store.set(id, new Account(id, Profile(id)));
+        console.log("findAccountID", id);
+        console.log("findAccountToken", token);
+        console.log("findAccountCTX", ctx);
+        // if (ctx) {
+        //     const {response} = ctx;
+        //     if (response.status === 404) {
+        //         return undefined;
+        //     }
         // }
+        console.log('store',store.get(id))
         return store.get(id);
     }
 
@@ -66,14 +77,14 @@ class Account {
      *   loading some claims from external resources etc. based on this detail
      *   or not return them in id tokens but only userinfo and so on.
      */
-    public async claims(use, scope) { // eslint-disable-line no-unused-vars
+    public async claims(use: string, scope: string) { // eslint-disable-line no-unused-vars
+        console.log("claimesUse", use);
+        console.log("claimesScope", scope);
         if (this.profile) {
             return {
                 sub: this.accountId, // it is essential to always return a sub claim
             };
         }
-
-        // return Profile(this.accountId);
     }
 
 }
