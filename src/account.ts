@@ -29,13 +29,14 @@ export const findByLogin = async (login: ILogin) => {
     console.log("findByLogin", username);
     // ross@ombori.com
     if (!logins.get(username)) {
-        const c = await User.findOne({ email: username }, (err, client) => {
+        await User.findOne({ email: username }, (err, client) => {
             if (err) { return null; }
             return client;
+        }).then((client) => {
+            if (client) {
+                logins.set(username, new Account(client._id, Profile(client._id, client)));
+            }
         });
-        if (c) {
-            logins.set(username, new Account(username, Profile(username, c)));
-        }
     }
     const acct = logins.get(username);
     if (!acct) { return null; }
@@ -43,6 +44,7 @@ export const findByLogin = async (login: ILogin) => {
 };
 
 export const findAccount = async (ctx: KoaContextWithOIDC, id: string, token: any) => {
+    console.log("findAccount", id);
     // token is a reference to the token used for which a given account is being loaded,
     //   it is undefined in scenarios where account claims are returned from authorization endpoint
     // ctx is the koa request context
