@@ -47,16 +47,6 @@ class Account {
         // token is a reference to the token used for which a given account is being loaded,
         //   it is undefined in scenarios where account claims are returned from authorization endpoint
         // ctx is the koa request context
-        console.log("findAccountID", id);
-        console.log("findAccountToken", token);
-        console.log("findAccountCTX", ctx);
-        // if (ctx) {
-        //     const {response} = ctx;
-        //     if (response.status === 404) {
-        //         return undefined;
-        //     }
-        // }
-        console.log('store',store.get(id))
         return store.get(id);
     }
 
@@ -78,8 +68,6 @@ class Account {
      *   or not return them in id tokens but only userinfo and so on.
      */
     public async claims(use: string, scope: string) { // eslint-disable-line no-unused-vars
-        console.log("claimesUse", use);
-        console.log("claimesScope", scope);
         if (this.profile) {
             return {
                 sub: this.accountId, // it is essential to always return a sub claim

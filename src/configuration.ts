@@ -21,6 +21,7 @@ const client1: ClientMetadata = {
     redirect_uris: ["https://testapp/signin-oidc"],
     response_types: ["id_token"],
     token_endpoint_auth_method: "none",
+    scope: "api"
 };
 
 const configuration: Configuration = {

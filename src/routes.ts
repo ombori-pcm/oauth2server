@@ -116,7 +116,7 @@ export default (app: Express, provider: any ) => {
       assert.equal(name, "login");
 
       const account = await Account.findByLogin(req.body);
-      console.log('acct',account);
+
       if (!account) {
         throw new Error("User not registered!");
       } else {
