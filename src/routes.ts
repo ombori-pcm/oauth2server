@@ -3,7 +3,7 @@ import querystring from "querystring";
 import { inspect } from "util";
 import { InteractionResults } from "oidc-provider";
 import isEmpty from "lodash/isEmpty";
-import { urlencoded, Express } from "express";
+import { urlencoded, Express, NextFunction, Request, Response } from "express";
 import Account from "./account";
 
 const body = urlencoded({ extended: false });
@@ -37,7 +37,7 @@ export default (app: Express, provider: any ) => {
     next();
   });
 
-  function setNoCache(req, res, next) {
+  function setNoCache(req: Request, res: Response, next: NextFunction) {
     res.set("Pragma", "no-cache");
     res.set("Cache-Control", "no-cache, no-store");
     next();
@@ -117,6 +117,10 @@ export default (app: Express, provider: any ) => {
 
       const account = await Account.findByLogin(req.body);
 
+      if (!account) {
+        throw Error("User not registered!");
+      }
+
       const result = {
         select_account: {}, // make sure its skipped by the interaction policy since we just logged in
         login: {
@@ -193,10 +197,10 @@ export default (app: Express, provider: any ) => {
     }
   });
 
-  app.use((err, req, res, next) => {
-    if (err instanceof SessionNotFound) {
+  app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+    if (error instanceof SessionNotFound) {
       // handle interaction expired / session not found error
     }
-    next(err);
+    next(error);
   });
 };

@@ -26,12 +26,12 @@ class Account {
     public static async findByLogin(login: ILogin) {
         const { username, password } = login;
         console.log("findByLogin", username);
-        //ross@ombori.com
+        // ross@ombori.com
         if (!logins.get(username)) {
             await User.findOne({ email: username }, (err, client) => {
-                if (err) { return null }
-                console.log(client)
-                logins.set(username, new Account(username, Profile(username,client)));
+                if (err) { return null; }
+                console.log(client);
+                logins.set(username, new Account(username, Profile(username, client)));
             });
         }
 

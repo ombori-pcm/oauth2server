@@ -42,14 +42,9 @@ const configuration: Configuration = {
         clientCredentials: { enabled: true }, // defaults to false
         devInteractions: { enabled: false }, // defaults to true
         introspection: { enabled: true }, // defaults to false
-        deviceFlow: { enabled: true }, // defaults to false
     },
     ttl: {
-        AccessToken: 1 * 60 * 60, // 1 hour in seconds
-        AuthorizationCode: 10 * 60, // 10 minutes in seconds
         IdToken: 1 * 60 * 60, // 1 hour in seconds
-        DeviceCode: 10 * 60, // 10 minutes in seconds
-        RefreshToken: 1 * 24 * 60 * 60, // 1 day in seconds
     },
     scopes: ["api"],
 };

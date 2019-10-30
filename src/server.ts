@@ -33,7 +33,7 @@ let server: Server;
       keepAlive: true,
       reconnectTries: 30,
       useNewUrlParser: true,
-      dbName: 'grid-admin-qa'
+      dbName: "grid-admin-qa"
     }
   );
   const connection = mongoose.connection;
