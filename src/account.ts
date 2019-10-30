@@ -24,32 +24,32 @@ interface ILogin {
     password: string;
 }
 
-class Account {
-    public static async findByLogin(login: ILogin) {
-        const { username, password } = login;
-        console.log("findByLogin", username);
-        // ross@ombori.com
-        if (!logins.get(username)) {
-            const c = await User.findOne({ email: username }, (err, client) => {
-                if (err) { return null; }
-                return client;
-            });
-            if(c){
-                logins.set(username, new Account(username, Profile(username, c)));
-            }
+export const findByLogin = async (login: ILogin) => {
+    const { username, password } = login;
+    console.log("findByLogin", username);
+    // ross@ombori.com
+    if (!logins.get(username)) {
+        const c = await User.findOne({ email: username }, (err, client) => {
+            if (err) { return null; }
+            return client;
+        });
+        if (c) {
+            logins.set(username, new Account(username, Profile(username, c)));
         }
-        const acct = logins.get(username);
-        if (!acct) { return null; }
-        return acct;
     }
+    const acct = logins.get(username);
+    if (!acct) { return null; }
+    return acct;
+};
 
-    public static async findAccount(ctx: KoaContextWithOIDC, id: string, token: any) {
-        // token is a reference to the token used for which a given account is being loaded,
-        //   it is undefined in scenarios where account claims are returned from authorization endpoint
-        // ctx is the koa request context
-        return store.get(id);
-    }
+export const findAccount = async (ctx: KoaContextWithOIDC, id: string, token: any) => {
+    // token is a reference to the token used for which a given account is being loaded,
+    //   it is undefined in scenarios where account claims are returned from authorization endpoint
+    // ctx is the koa request context
+    return store.get(id);
+};
 
+class Account {
     private accountId: string;
     private profile: IProfile;
 

@@ -4,7 +4,7 @@ import { inspect } from "util";
 import { InteractionResults } from "oidc-provider";
 import isEmpty from "lodash/isEmpty";
 import { urlencoded, Express, NextFunction, Request, Response } from "express";
-import Account from "./account";
+import { findByLogin } from "./account";
 
 const body = urlencoded({ extended: false });
 
@@ -115,7 +115,7 @@ export default (app: Express, provider: any ) => {
       const { prompt: { name } } = await provider.interactionDetails(req, res);
       assert.equal(name, "login");
 
-      const account = await Account.findByLogin(req.body);
+      const account = await findByLogin(req.body);
 
       if (!account) {
         throw new Error("User not registered!");

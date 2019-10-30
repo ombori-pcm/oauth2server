@@ -8,14 +8,14 @@ import path from "path";
 import url from "url";
 import routes from "./routes";
 import { Server } from "http";
-import Account from "./account";
+import { findAccount } from "./account";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const { PORT = 3000, ISSUER = `http://localhost:${PORT}`, MONGO_URL } = process.env;
 
-configuration.findAccount = Account.findAccount;
+configuration.findAccount = findAccount;
 
 const app = express();
 app.use(helmet());
