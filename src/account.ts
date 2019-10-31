@@ -1,4 +1,3 @@
-import nanoid from "nanoid";
 import User, { IUser } from "./models/user.model";
 import { KoaContextWithOIDC } from "oidc-provider";
 
@@ -55,8 +54,8 @@ class Account {
     private accountId: string;
     private profile: IProfile;
 
-    constructor(id: string, profile: IProfile) {
-        this.accountId = id || nanoid();
+    constructor(accountId: string, profile: IProfile) {
+        this.accountId = accountId;
         this.profile = profile;
         store.set(this.accountId, this);
     }
