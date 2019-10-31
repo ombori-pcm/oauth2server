@@ -4,7 +4,7 @@ import { inspect } from "util";
 import { InteractionResults } from "oidc-provider";
 import isEmpty from "lodash/isEmpty";
 import { urlencoded, Express, NextFunction, Request, Response } from "express";
-import { findByLogin } from "./account";
+import { findByLogin } from "../account";
 
 const body = urlencoded({ extended: false });
 

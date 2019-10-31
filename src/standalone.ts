@@ -1,12 +1,11 @@
-import express from "express";
 import mongoose from "mongoose";
 import { Provider } from "oidc-provider";
 import configuration from "./configuration";
 import { set } from "lodash";
-import helmet from "helmet";
+import render from "koa-ejs";
+import helmet from "koa-helmet";
 import path from "path";
-import url from "url";
-import routes from "./routes/express";
+import routes from "./routes/koa";
 import { Server } from "http";
 import { findAccount } from "./account";
 import dotenv from "dotenv";
@@ -16,13 +15,6 @@ dotenv.config();
 const { PORT = 3000, ISSUER = `http://localhost:${PORT}`, MONGO_URL } = process.env;
 
 configuration.findAccount = findAccount;
-
-const app = express();
-app.use(helmet());
-
-app.set("port", PORT);
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs");
 
 let server: Server;
 
@@ -45,33 +37,36 @@ let server: Server;
 
   const provider = new Provider(ISSUER, { ...configuration });
 
+  provider.use(helmet());
+
   if (process.env.NODE_ENV === "production") {
-    app.enable("trust proxy");
     provider.proxy = true;
     set(configuration, "cookies.short.secure", true);
     set(configuration, "cookies.long.secure", true);
 
-    app.use((req, res, next) => {
-      if (req.secure) {
-        next();
-      } else if (req.method === "GET" || req.method === "HEAD") {
-        res.redirect(url.format({
-          protocol: "https",
-          host: req.get("host"),
-          pathname: req.originalUrl,
-        }));
+    provider.use(async (ctx, next) => {
+      if (ctx.secure) {
+        await next();
+      } else if (ctx.method === "GET" || ctx.method === "HEAD") {
+        ctx.redirect(ctx.href.replace(/^http:\/\//i, "https://"));
       } else {
-        res.status(400).json({
+        ctx.body = {
           error: "invalid_request",
           error_description: "do yourself a favor and only use https",
-        });
+        };
+        ctx.status = 400;
       }
     });
   }
 
-  routes(app, provider);
-  app.use(provider.callback);
-  server = app.listen(PORT, () => {
+  render(provider.app, {
+    cache: false,
+    viewExt: "ejs",
+    layout: "_layout",
+    root: path.join(__dirname, "views"),
+  });
+  provider.use(routes(provider).routes());
+  server = provider.listen(PORT, () => {
     console.log(`application is listening on port ${PORT}, check its /.well-known/openid-configuration`);
   });
 })().catch((err) => {
