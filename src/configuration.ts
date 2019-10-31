@@ -5,20 +5,11 @@ const { Prompt, base: policy } = interactionPolicy;
 // copies the default policy, already has login and consent prompt policies
 const interactions = policy();
 
-// create a requestable prompt with no implicit checks
-const selectAccount = new Prompt({
-  name: "select_account",
-  requestable: true,
-});
-
-// add to index 0, order goes select_account > login > consent
-interactions.add(selectAccount, 0);
-
 const client1: ClientMetadata = {
-    client_id: "test_implicit_app",
-    client_secret: "bar",
+    client_id: "id.ombori.com",
+    client_secret: "sec_key",
     grant_types: ["implicit"],
-    redirect_uris: ["https://testapp/signin-oidc"],
+    redirect_uris: ["https://ombori/signin-oidc"],
     response_types: ["id_token"],
     token_endpoint_auth_method: "none",
 };

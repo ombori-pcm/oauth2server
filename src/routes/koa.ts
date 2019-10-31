@@ -1,4 +1,3 @@
-/* eslint-disable no-console, max-len, camelcase, no-unused-vars */
 import assert from "assert";
 import querystring from "querystring";
 import { inspect } from "util";
@@ -7,7 +6,7 @@ import { isEmpty } from "lodash";
 import bodyParser from "koa-body";
 import Router, {RouterContext} from "koa-router";
 
-import { renderError } from "oidc-provider/lib/helpers/defaults"; // make your own, you'll need it anyway
+import { renderError } from "oidc-provider/lib/helpers/defaults";
 import { findByLogin } from "../account";
 
 const keys = new Set();
@@ -47,30 +46,6 @@ export default (provider: any) => {
     const client = await provider.Client.find(params.client_id);
 
     switch (prompt.name) {
-      case "select_account": {
-        if (!session) {
-          return provider.interactionFinished(ctx.req, ctx.res, {
-            select_account: {},
-          }, { mergeWithLastSubmission: false });
-        }
-
-        const account = await provider.Account.findAccount(ctx, session.accountId);
-        const { email } = await account.claims("prompt", "email", { email: null }, []);
-
-        return ctx.render("select_account", {
-          client,
-          uid,
-          email,
-          details: prompt.details,
-          params,
-          title: "Sign-in",
-          session: session ? debug(session) : undefined,
-          dbg: {
-            params: debug(params),
-            prompt: debug(prompt),
-          },
-        });
-      }
       case "login": {
         return ctx.render("login", {
           client,
@@ -120,35 +95,12 @@ export default (provider: any) => {
         throw new Error("User not registered!");
     } else {
         result = {
-            select_account: {}, // make sure its skipped by the interaction policy since we just logged in
             login: {
                 account: account.accountId,
             },
         };
     }
 
-    return provider.interactionFinished(ctx.req, ctx.res, result, {
-      mergeWithLastSubmission: false,
-    });
-  });
-
-  router.post("/interaction/:uid/continue", body, async (ctx: any) => {
-    const interaction = await provider.interactionDetails(ctx.req, ctx.res);
-    const { prompt: { name, details } } = interaction;
-    assert.equal(name, "select_account");
-
-    if (ctx.request.body.switch) {
-      if (interaction.params.prompt) {
-        const prompts = new Set(interaction.params.prompt.split(" "));
-        prompts.add("login");
-        interaction.params.prompt = [...prompts].join(" ");
-      } else {
-        interaction.params.prompt = "logout";
-      }
-      await interaction.save();
-    }
-
-    const result = { select_account: {} };
     return provider.interactionFinished(ctx.req, ctx.res, result, {
       mergeWithLastSubmission: false,
     });
