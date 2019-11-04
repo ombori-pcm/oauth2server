@@ -92,12 +92,15 @@ export default (provider: any) => {
     let result = {};
 
     if (!account) {
-        throw new Error("User not registered!");
+        result = {
+          error: "unauthorize_client",
+          error_description: "Invalid credentials interaction",
+        };
     } else {
         result = {
-            login: {
-                account: account.accountId,
-            },
+          login: {
+              account: account.accountId,
+          },
         };
     }
 
