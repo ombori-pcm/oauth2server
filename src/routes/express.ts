@@ -94,18 +94,20 @@ export default (app: Express, provider: any ) => {
       assert.equal(name, "login");
 
       const account = await findByLogin(req.body);
-
+      let result = {};
       if (!account) {
-        throw new Error("User not registered!");
+        result = {
+          error: "unauthorize_client",
+          error_description: "Invalid credentials interaction",
+        };
       } else {
-        const result = {
+        result = {
           login: {
             account: account.accountId,
           },
         };
-
-        await provider.interactionFinished(req, res, result, { mergeWithLastSubmission: false });
       }
+      await provider.interactionFinished(req, res, result, { mergeWithLastSubmission: false });
     } catch (err) {
       next(err);
     }

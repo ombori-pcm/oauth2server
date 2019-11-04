@@ -7,11 +7,10 @@ const interactions = policy();
 
 const client1: ClientMetadata = {
     client_id: "id.ombori.com",
-    client_secret: "sec_key",
-    grant_types: ["implicit"],
+    client_secret: "ombori_sec_key", // check if essential
+    grant_types: ["authorization_code"],
     redirect_uris: ["https://ombori/signin-oidc"],
-    response_types: ["id_token"],
-    token_endpoint_auth_method: "none",
+    response_types: ["code"]
 };
 
 const configuration: Configuration = {
@@ -35,7 +34,9 @@ const configuration: Configuration = {
         introspection: { enabled: true }, // defaults to false
     },
     ttl: {
-        IdToken: 1 * 60 * 60, // 1 hour in seconds
+        AccessToken: 1 * 60 * 60, // 1 hour in seconds
+        AuthorizationCode: 10 * 60, // 10 minutes in seconds
+        RefreshToken: 1 * 24 * 60 * 60, // 1 day in seconds
     },
     scopes: ["api"],
     claims: {
