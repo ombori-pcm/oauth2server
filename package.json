@@ -20,7 +20,7 @@
     "koa-ejs": "^4.2.0",
     "koa-helmet": "^5.2.0",
     "koa-router": "^7.4.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "mongoose": "^5.7.7",
     "nodemon": "^1.19.4",
     "oidc-provider": "^6.12.12"
