@@ -14,7 +14,7 @@
     "@types/mongoose": "^5.5.23",
     "dotenv": "^8.2.0",
     "ejs": "^2.7.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "helmet": "^3.21.2",
     "koa-body": "^4.1.1",
     "koa-ejs": "^4.2.0",
